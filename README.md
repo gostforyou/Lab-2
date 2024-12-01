@@ -101,35 +101,180 @@
 import java.util.Scanner;
 
 public class Main {
-    // Объявляем объект класса Scanner для ввода данных
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Вводим данные
-        System.out.println("Введите длины отрезков A, B и C:");
-        int A = scanner.nextInt();
-        int B = scanner.nextInt();
-        int C = scanner.nextInt();
-        // Проверка можно ли сделать треугольник
-        if ((A + B > C) && (A + C > B) && (B + C > A)) {
-            System.out.println("Из сторон можно сделать треугольник");
-            // Определяем вид
-            if((A == B) && (B == C) && (A == C)) {
-                System.out.println("Треугольнниик равносторонний");
-            } else if (A == B || B == C || A == C) {
-                System.out.println("Треугольник равнобедренный");
+        // Размер массива
+        System.out.print("Введите размер массива N (строки): ");
+        int N = scanner.nextInt();
+        System.out.print("Введите размер массива M (столбцы): ");
+        int M = scanner.nextInt();
+
+        int[][] originA = new int[N][M];
+
+        // Заполнение массива
+        System.out.println("Введите элементы массива:");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                originA[i][j] = scanner.nextInt();
             }
-            int max = Math.max(A, Math.max(B, C));
-            int sumOfSquares = A * A + B * B + C * C - max * max;
-            if (max * max == sumOfSquares) {
-                System.out.println("Треугольник прямоугольный");
-            } else if (!(A == B || B == C || A == C)) {
-                System.out.println("Треугольник разносторонний");
-            }
-        } else {
-            System.out.println("Из сторон нельзя сделать треугольник");
         }
-        scanner.close();    
+
+        // 1: Сортировка столбцов по возрастанию
+        int[][] array1 = copyA(originA, N, M);
+        sortColumns(array1, N, M);
+        System.out.println("Массив после сортировки столбцов по возрастанию:");
+        printArray(array1, N, M);
+
+        // 2: Сортировка строк по убыванию
+        int[][] array2 = copyA(originA, N, M);
+        sortRows(array2, N, M);
+        System.out.println("Массив после сортировки строк по убыванию:");
+        printArray(array2, N, M);
+
+        // 3: Сортировка главной диагонали по возрастанию
+        int[][] array3 = copyA(originA, N, M);
+        sortMainDiagonal(array3, N);
+        System.out.println("Массив после сортировки главной диагонали по возрастанию:");
+        printArray(array3, N, M);
+
+        // 4: Вычисление среднего арифметического (нечётных элементов)
+        calculateMid(originA, N, M);
+
+        // 5: Вывод элементов массива в зигзагообразном порядке
+        System.out.println("Элементы массива в зигзагообразном порядке:");
+        printZigzag(originA, N, M);
+
+        // 6: Изменение элементов массива
+        int[][] modArray = modifyArray(originA, N, M);
+        System.out.println("Изменённый массив:");
+        printArray(modArray, N, M);
+    }
+
+    // Копирование массива
+    public static int[][] copyA(int[][] array, int N, int M) {
+        int[][] newArray = new int[N][M];
+        for (int i = 0; i < N; i++) {
+            System.arraycopy(array[i], 0, newArray[i], 0, M);
+        }
+        return newArray;
+    }
+
+    // Сортировка столбцов
+    public static void sortColumns(int[][] array, int N, int M) {
+        for (int j = 0; j < M; j++) {
+            for (int i = 0; i < N - 1; i++) {
+                for (int k = 0; k < N - i - 1; k++) {
+                    if (array[k][j] > array[k + 1][j]) {
+                        int temp = array[k][j];
+                        array[k][j] = array[k + 1][j];
+                        array[k + 1][j] = temp;
+                    }
+                }
+            }
+        }
+    }
+
+    // Сортировка строк
+    public static void sortRows(int[][] array, int N, int M) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M - 1; j++) {
+                for (int k = 0; k < M - j - 1; k++) {
+                    if (array[i][k] < array[i][k + 1]) {
+                        int temp = array[i][k];
+                        array[i][k] = array[i][k + 1];
+                        array[i][k + 1] = temp;
+                    }
+                }
+            }
+        }
+    }
+
+    // Сортировка главной диагонали
+    public static void sortMainDiagonal(int[][] array, int N) {
+        int minSize = Math.min(N, array[0].length);
+        int[] diagonal = new int[minSize];
+
+        // Извлекаем главную диагональ
+        for (int i = 0; i < minSize; i++) {
+            diagonal[i] = array[i][i];
+        }
+
+        // Сортируем диагональ
+        for (int i = 0; i < diagonal.length - 1; i++) {
+            for (int j = 0; j < diagonal.length - i - 1; j++) {
+                if (diagonal[j] > diagonal[j + 1]) {
+                    int temp = diagonal[j];
+                    diagonal[j] = diagonal[j + 1];
+                    diagonal[j + 1] = temp;
+                }
+            }
+        }
+
+        // Записываем отсортированную диагональ обратно в массив
+        for (int i = 0; i < minSize; i++) {
+            array[i][i] = diagonal[i];
+        }
+    }
+
+    // вычисления среднего арифметического (нечётных элементов)
+    public static void calculateMid(int[][] array, int N, int M) {
+        int Count = 0;
+        int Sum = 0;
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (array[i][j] % 2 != 0) {
+                    Count++;
+                    Sum += array[i][j];
+                }
+            }
+        }
+
+        double oddAverage = Count > 0 ? (double) Sum / Count : 0;
+        System.out.println("Среднее арифметическое нечётных элементов: " + oddAverage);
+        System.out.println("Количество нечётных элементов: " + Count);
+    }
+
+    // зигзагообразный вывод
+    public static void printZigzag(int[][] array, int N, int M) {
+        for (int i = 0; i < N; i++) {
+            if (i % 2 == 0) {
+                for (int j = 0; j < M; j++) {
+                    System.out.print(array[i][j] + " ");
+                }
+            } else {
+                for (int j = M - 1; j >= 0; j--) {
+                    System.out.print(array[i][j] + " ");
+                }
+            }
+        }
+        System.out.println();
+    }
+
+    // изменяем по условию
+    public static int[][] modifyArray(int[][] array, int N, int M) {
+        int[][] modifiedArray = new int[N][M];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (array[i][j] % 2 == 0) {
+                    modifiedArray[i][j] = -array[i][j];
+                } else {
+                    modifiedArray[i][j] = array[i][j] * array[i][j];
+                }
+            }
+        }
+        return modifiedArray;
+    }
+
+    // Как выводить массив
+    public static void printArray(int[][] array, int N, int M) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                System.out.print(array[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }
 
@@ -137,79 +282,85 @@ public class Main {
 ```
 ### 6. Анализ правильности решения
 Программа работает корректно на всем множестве решений с учетом ограничений.
-Проводим серию тестов для каждого вида треуольника и для случая когда мы не можем его посторить.
+Проводим серию тестов для каждого пункта.
 1. Тест на `A = 1, B = 3, C = 5`:
 
 - **Input**:
         ```
-        1 3 5
+        3
+        3
+        1 2 3
+        4 5 6
+        7 8 9
         ```
 
     - **Output**:
         ```
-        "Из сторон нельзя сделать треугольник"
+        1 2 3 
+        4 5 6 
+        7 8 9
+
+        3 2 1 
+        6 5 4 
+        9 8 7
+
+        1 2 3 
+        4 5 6 
+        7 8 9 
+
+        Среднее арифметическое нечётных элементов: 5.0
+        Количество нечётных элементов: 5
+
+        Элементы массива в зигзагообразном порядке:
+        1 2 3 6 5 4 7 8 9
+
+        Изменённый массив:
+        1 -2 9 
+       -4 25 -6 
+       49 -8 81
+
+Это подтверждает корректность: вывода зигзагом, изменённого массива, нахождение среднего арифметического нечётных элементов и количества нечётных элементов.
+
         ```
 
 2. Тест на `A = 2, B = 2, C = 3`:
 
 - **Input**:
         ```
-        2 2 3
+        3
+        4 
+        3 1 1 2
+        1 1 2 2
+        1 1 2 5
         ```
 
     - **Output**:
         ```
-        "Из сторон можно сделать треугольник"
-        "Треугольник равнобедренный"
+        Массив после сортировки столбцов по возрастанию:
+1 1 1 2 
+1 1 2 2 
+3 1 2 5 
+
+        Массив после сортировки строк по убыванию:
+3 2 1 1 
+2 2 1 1 
+5 2 1 1
+
+       Массив после сортировки главной диагонали по возрастанию:
+1 1 1 2 
+1 2 2 2 
+1 1 3 5 
+
+       Среднее арифметическое нечётных элементов: 1.75
+       Количество нечётных элементов: 8
+       
+       Элементы массива в зигзагообразном порядке:
+       3 1 1 2 2 2 1 1 1 1 2 5 
+       
+       Изменённый массив:
+9 1 1 -2 
+1 1 -2 -2 
+1 1 -2 25 
+
+Это  подтверждает корректность вывода при сортировки столбцов пузырьком, сортировке строк по убыванию и сортировке диагонали.
         ```
-
-3. Тест на `A = 2, B = 2, C = 2`:
-
-- **Input**:
-         ```
-        2 2 2
-         ```
-
-    - **Output**:
-        ```
-        "Из сторон можно сделать треугольник"
-        "Треугольнниик равносторонний"
-        ```
-
-4. Тест на `A = 4, B = 3, C = 5`:
-
-- **Input**:
-         ```
-        4 3 5
-         ```
-
-    - **Output**:
-        ```
-        "Из сторон можно сделать треугольник"
-        "Треугольник прямоугольный"
-        ```
-
-5. Тест на `A = 10, B = 9, C = 8`:
-
-- **Input**:
-         ```
-        10 9 8
-         ```
-
-    - **Output**:
-        ```
-        "Из сторон можно сделать треугольник"
-        "Треугольник разносторонний"
-        ```
-
-6. Тест на максимум `A = 1000000000, B = 1000000000, C = 1000000000`:
-
-- **Input**:
-         ```
-        1000000000 1000000000 1000000000
-         ```
-
-    - **Output**:
-        ```
-        "Из сторон можно сделать треугольник"
-        "Треугольнниик равносторонний"
