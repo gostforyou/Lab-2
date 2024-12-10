@@ -100,7 +100,6 @@
 ### 5. Программа
 ```java
 import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -232,7 +231,13 @@ public class Main {
             }
         }
 
-        double oddAverage = Count > 0 ? (double) Sum / Count : 0;
+        double oddAverage;
+        if (Count > 0) {
+            oddAverage = (double) Sum / Count;
+        } else {
+            oddAverage = 0;
+        }
+
         System.out.println("Среднее арифметическое нечётных элементов: " + oddAverage);
         System.out.println("Количество нечётных элементов: " + Count);
     }
@@ -278,6 +283,8 @@ public class Main {
         }
     }
 }
+
+Найти еще
 
 
 ```
