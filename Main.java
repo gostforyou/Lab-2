@@ -63,12 +63,26 @@ public class Main {
     // Сортировка столбцов
     public static void sortColumns(int[][] array, int N, int M) {
         for (int j = 0; j < M; j++) {
+            // Сортируем столбец
             for (int i = 0; i < N - 1; i++) {
                 for (int k = 0; k < N - i - 1; k++) {
                     if (array[k][j] > array[k + 1][j]) {
                         int temp = array[k][j];
                         array[k][j] = array[k + 1][j];
                         array[k + 1][j] = temp;
+                    }
+                }
+            }
+        }
+
+        // Теперь сортируем строки в соответствии с отсортированными столбцами
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M - 1; j++) {
+                for (int k = 0; k < M - j - 1; k++) {
+                    if (array[i][k] > array[i][k + 1]) {
+                        int temp = array[i][k];
+                        array[i][k] = array[i][k + 1];
+                        array[i][k + 1] = temp;
                     }
                 }
             }
@@ -117,26 +131,31 @@ public class Main {
         }
     }
 
-    // вычисления среднего арифметического (нечётных элементов)
+    // Вычисление среднего арифметического (нечётных элементов)
     public static void calculateMid(int[][] array, int N, int M) {
-        int Count = 0;
-        int Sum = 0;
+        int count = 0;
+        int sum = 0;
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
                 if (array[i][j] % 2 != 0) {
-                    Count++;
-                    Sum += array[i][j];
+                    count++;
+                    sum += array[i][j];
                 }
             }
         }
 
-        double oddAverage = Count > 0 ? (double) Sum / Count : 0;
+        double oddAverage;
+        if (count > 0) {
+            oddAverage = (double) sum / count;
+        } else {
+            oddAverage = 0;
+        }
         System.out.println("Среднее арифметическое нечётных элементов: " + oddAverage);
-        System.out.println("Количество нечётных элементов: " + Count);
+        System.out.println("Количество нечётных элементов: " + count);
     }
 
-    // зигзагообразный вывод
+    // Зигзагообразный вывод
     public static void printZigzag(int[][] array, int N, int M) {
         for (int i = 0; i < N; i++) {
             if (i % 2 == 0) {
@@ -152,7 +171,7 @@ public class Main {
         System.out.println();
     }
 
-    // изменяем по условию
+    // Изменение элементов массива
     public static int[][] modifyArray(int[][] array, int N, int M) {
         int[][] modifiedArray = new int[N][M];
         for (int i = 0; i < N; i++) {
@@ -167,7 +186,7 @@ public class Main {
         return modifiedArray;
     }
 
-    // Как выводить массив
+    // Вывод массива
     public static void printArray(int[][] array, int N, int M) {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
